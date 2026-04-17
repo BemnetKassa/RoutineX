@@ -6,6 +6,28 @@ import { getRoutines, deleteRoutine } from "../db/routines";
 import { useRoutineStore } from "../store/routineStore";
 import { Routine } from "../models/Routine";
 
+const DAY_KEYS = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+] as const;
+
+const getTodayPlan = (routine: Routine) => {
+  if (routine.routineType !== "gym" || !routine.details) return null;
+  const todayKey = DAY_KEYS[new Date().getDay()];
+  const todayPlan = routine.details[todayKey];
+  return todayPlan && todayPlan.trim().length > 0 ? todayPlan : null;
+};
+
+const formatDayName = () => {
+  const todayKey = DAY_KEYS[new Date().getDay()];
+  return todayKey.charAt(0).toUpperCase() + todayKey.slice(1);
+};
+
 
 export default function HomeScreen({ navigation }: any) {
   const { routines, setRoutines } = useRoutineStore();
@@ -26,7 +48,10 @@ export default function HomeScreen({ navigation }: any) {
         <Text style={styles.typeChip}>{item.routineType.toUpperCase()}</Text>
       </View>
       {item.description ? <Text style={styles.description}>{item.description}</Text> : null}
-      {item.details && Object.keys(item.details).length > 0 ? (
+      {getTodayPlan(item) ? (
+        <Text style={styles.todayPlan}>{`Today (${formatDayName()}): ${getTodayPlan(item)}`}</Text>
+      ) : null}
+      {item.details && Object.keys(item.details).length > 0 && item.routineType !== "gym" ? (
         <Text style={styles.detailsPreview}>
           {Object.entries(item.details)
             .slice(0, 2)
@@ -163,6 +188,12 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 12,
     color: "#64748B",
+  },
+  todayPlan: {
+    marginTop: 6,
+    fontSize: 13,
+    color: "#0F766E",
+    fontWeight: "600",
   },
   actions: {
     marginTop: 12,

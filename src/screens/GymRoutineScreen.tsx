@@ -1,16 +1,36 @@
-import { View, TextInput, Button, StyleSheet, Text, Alert } from "react-native";
+import { ScrollView, View, TextInput, Button, StyleSheet, Text, Alert } from "react-native";
 import { useState } from "react";
 
 import { addRoutine } from "../db/routines";
-import { scheduleNotification } from "../services/notifications";
+import { scheduleWeeklyPlanNotifications } from "../services/notifications";
+
+const WEEK_DAYS = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+] as const;
+
+type WeekDay = (typeof WEEK_DAYS)[number];
+
+const formatDayLabel = (day: WeekDay) => day.charAt(0).toUpperCase() + day.slice(1);
 
 export default function GymRoutineScreen({ navigation }: any) {
   const [title, setTitle] = useState("Gym workout");
   const [description, setDescription] = useState("");
   const [time, setTime] = useState("");
-  const [exerciseType, setExerciseType] = useState("");
-  const [duration, setDuration] = useState("");
-  const [intensity, setIntensity] = useState("");
+  const [weeklyPlan, setWeeklyPlan] = useState<Record<WeekDay, string>>({
+    monday: "",
+    tuesday: "",
+    wednesday: "",
+    thursday: "",
+    friday: "",
+    saturday: "",
+    sunday: "",
+  });
 
   const saveRoutine = async () => {
     const trimmedTitle = title.trim();
@@ -27,19 +47,23 @@ export default function GymRoutineScreen({ navigation }: any) {
       return;
     }
 
+    const hasAnyWorkout = Object.values(weeklyPlan).some((workout) => workout.trim().length > 0);
+    if (!hasAnyWorkout) {
+      Alert.alert("Weekly plan needed", "Please add at least one workout day.");
+      return;
+    }
+
     addRoutine(
       trimmedTitle,
       trimmedDescription,
       trimmedTime,
       async () => {
-        await scheduleNotification(trimmedTitle, trimmedTime);
+        await scheduleWeeklyPlanNotifications(trimmedTitle, trimmedTime, weeklyPlan);
       },
       {
         routineType: "gym",
         details: {
-          exerciseType,
-          duration,
-          intensity,
+          ...weeklyPlan,
         },
       },
     );
@@ -47,9 +71,9 @@ export default function GymRoutineScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.heading}>Gym workout</Text>
-      <Text style={styles.subheading}>Plan your workout and set a reminder.</Text>
+      <Text style={styles.subheading}>Set your weekly workout once and get reminded every week.</Text>
 
       <Text style={styles.label}>Title</Text>
       <TextInput
@@ -67,29 +91,23 @@ export default function GymRoutineScreen({ navigation }: any) {
         style={styles.input}
       />
 
-      <Text style={styles.label}>Exercise type</Text>
-      <TextInput
-        placeholder="Strength, cardio, mobility"
-        onChangeText={setExerciseType}
-        value={exerciseType}
-        style={styles.input}
-      />
-
-      <Text style={styles.label}>Duration</Text>
-      <TextInput
-        placeholder="45 min"
-        onChangeText={setDuration}
-        value={duration}
-        style={styles.input}
-      />
-
-      <Text style={styles.label}>Intensity</Text>
-      <TextInput
-        placeholder="Light, medium, hard"
-        onChangeText={setIntensity}
-        value={intensity}
-        style={styles.input}
-      />
+      <Text style={styles.planHeading}>Weekly workout plan</Text>
+      {WEEK_DAYS.map((day) => (
+        <View key={day}>
+          <Text style={styles.label}>{formatDayLabel(day)}</Text>
+          <TextInput
+            placeholder={`Workout for ${formatDayLabel(day)} (optional)`}
+            onChangeText={(value) =>
+              setWeeklyPlan((previous) => ({
+                ...previous,
+                [day]: value,
+              }))
+            }
+            value={weeklyPlan[day]}
+            style={styles.input}
+          />
+        </View>
+      ))}
 
       <Text style={styles.label}>Time</Text>
       <TextInput
@@ -103,15 +121,18 @@ export default function GymRoutineScreen({ navigation }: any) {
       <View style={styles.buttonRow}>
         <Button title="Save Routine" onPress={saveRoutine} />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "#F7F7F5",
+  },
+  content: {
+    padding: 20,
+    paddingBottom: 32,
   },
   heading: {
     fontSize: 24,
@@ -123,6 +144,12 @@ const styles = StyleSheet.create({
     color: "#6B7280",
     marginTop: 6,
     marginBottom: 20,
+  },
+  planHeading: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#1F2937",
+    marginBottom: 10,
   },
   label: {
     fontSize: 13,
