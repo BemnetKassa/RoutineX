@@ -5,6 +5,27 @@ export const initDB = () => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT,
     description TEXT,
-    time TEXT
+    time TEXT,
+    routineType TEXT DEFAULT 'general',
+    detailsJson TEXT
   );`);
+
+  const columns = db.getAllSync<{ name: string }>(
+    "PRAGMA table_info(routines)",
+  );
+  const columnNames = new Set(columns.map((column) => column.name));
+
+  if (!columnNames.has("routineType")) {
+    db.execSync(
+      "ALTER TABLE routines ADD COLUMN routineType TEXT DEFAULT 'general'",
+    );
+  }
+
+  if (!columnNames.has("detailsJson")) {
+    db.execSync("ALTER TABLE routines ADD COLUMN detailsJson TEXT");
+  }
+
+  db.execSync(
+    "UPDATE routines SET routineType = COALESCE(routineType, 'general')",
+  );
 };

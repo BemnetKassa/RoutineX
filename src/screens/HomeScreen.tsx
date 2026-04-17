@@ -22,7 +22,18 @@ export default function HomeScreen({ navigation }: any) {
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.time}>{item.time}</Text>
       </View>
+      <View style={styles.metaRow}>
+        <Text style={styles.typeChip}>{item.routineType.toUpperCase()}</Text>
+      </View>
       {item.description ? <Text style={styles.description}>{item.description}</Text> : null}
+      {item.details && Object.keys(item.details).length > 0 ? (
+        <Text style={styles.detailsPreview}>
+          {Object.entries(item.details)
+            .slice(0, 2)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join("  |  ")}
+        </Text>
+      ) : null}
 
       <View style={styles.actions}>
         <Button
@@ -116,6 +127,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  metaRow: {
+    marginTop: 8,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  typeChip: {
+    fontSize: 11,
+    color: "#334155",
+    backgroundColor: "#E2E8F0",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+    overflow: "hidden",
+    fontWeight: "700",
+  },
   title: {
     fontSize: 18,
     fontWeight: "600",
@@ -132,6 +158,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 14,
     color: "#5B5B5B",
+  },
+  detailsPreview: {
+    marginTop: 6,
+    fontSize: 12,
+    color: "#64748B",
   },
   actions: {
     marginTop: 12,

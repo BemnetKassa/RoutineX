@@ -30,9 +30,15 @@ export default function AddRoutineScreen({ navigation, route }: any) {
       return;
     }
 
-    addRoutine(trimmedTitle, trimmedDescription, trimmedTime, async () => {
-      await scheduleNotification(trimmedTitle, trimmedTime);
-    });
+    addRoutine(
+      trimmedTitle,
+      trimmedDescription,
+      trimmedTime,
+      async () => {
+        await scheduleNotification(trimmedTitle, trimmedTime);
+      },
+      { routineType: "general" },
+    );
     navigation.goBack();
   };
 

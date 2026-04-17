@@ -8,6 +8,9 @@ export default function GymRoutineScreen({ navigation }: any) {
   const [title, setTitle] = useState("Gym workout");
   const [description, setDescription] = useState("");
   const [time, setTime] = useState("");
+  const [exerciseType, setExerciseType] = useState("");
+  const [duration, setDuration] = useState("");
+  const [intensity, setIntensity] = useState("");
 
   const saveRoutine = async () => {
     const trimmedTitle = title.trim();
@@ -24,9 +27,22 @@ export default function GymRoutineScreen({ navigation }: any) {
       return;
     }
 
-    addRoutine(trimmedTitle, trimmedDescription, trimmedTime, async () => {
-      await scheduleNotification(trimmedTitle, trimmedTime);
-    });
+    addRoutine(
+      trimmedTitle,
+      trimmedDescription,
+      trimmedTime,
+      async () => {
+        await scheduleNotification(trimmedTitle, trimmedTime);
+      },
+      {
+        routineType: "gym",
+        details: {
+          exerciseType,
+          duration,
+          intensity,
+        },
+      },
+    );
     navigation.goBack();
   };
 
@@ -48,6 +64,30 @@ export default function GymRoutineScreen({ navigation }: any) {
         placeholder="Leg day, cardio, push/pull"
         onChangeText={setDescription}
         value={description}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Exercise type</Text>
+      <TextInput
+        placeholder="Strength, cardio, mobility"
+        onChangeText={setExerciseType}
+        value={exerciseType}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Duration</Text>
+      <TextInput
+        placeholder="45 min"
+        onChangeText={setDuration}
+        value={duration}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Intensity</Text>
+      <TextInput
+        placeholder="Light, medium, hard"
+        onChangeText={setIntensity}
+        value={intensity}
         style={styles.input}
       />
 

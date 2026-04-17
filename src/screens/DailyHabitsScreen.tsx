@@ -9,6 +9,9 @@ export default function DailyHabitsScreen({ navigation }: any) {
   const [title, setTitle] = useState("Daily habits");
   const [description, setDescription] = useState("");
   const [time, setTime] = useState("");
+  const [habitList, setHabitList] = useState("");
+  const [targetStreak, setTargetStreak] = useState("");
+  const [habitCue, setHabitCue] = useState("");
 
   const saveRoutine = async () => {
     const trimmedTitle = title.trim();
@@ -25,9 +28,22 @@ export default function DailyHabitsScreen({ navigation }: any) {
       return;
     }
 
-    addRoutine(trimmedTitle, trimmedDescription, trimmedTime, async () => {
-      await scheduleNotification(trimmedTitle, trimmedTime);
-    });
+    addRoutine(
+      trimmedTitle,
+      trimmedDescription,
+      trimmedTime,
+      async () => {
+        await scheduleNotification(trimmedTitle, trimmedTime);
+      },
+      {
+        routineType: "habits",
+        details: {
+          habitList,
+          targetStreak,
+          habitCue,
+        },
+      },
+    );
     navigation.goBack();
   };
 
@@ -49,6 +65,30 @@ export default function DailyHabitsScreen({ navigation }: any) {
         placeholder="Hydrate, stretch, journal"
         onChangeText={setDescription}
         value={description}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Specific habits</Text>
+      <TextInput
+        placeholder="Water, vitamins, walk"
+        onChangeText={setHabitList}
+        value={habitList}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Target streak</Text>
+      <TextInput
+        placeholder="30 days"
+        onChangeText={setTargetStreak}
+        value={targetStreak}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Habit cue</Text>
+      <TextInput
+        placeholder="After breakfast"
+        onChangeText={setHabitCue}
+        value={habitCue}
         style={styles.input}
       />
 

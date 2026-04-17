@@ -8,6 +8,9 @@ export default function StudyRoutineScreen({ navigation }: any) {
   const [title, setTitle] = useState("Study session");
   const [description, setDescription] = useState("");
   const [time, setTime] = useState("");
+  const [subject, setSubject] = useState("");
+  const [sessionLength, setSessionLength] = useState("");
+  const [studyMethod, setStudyMethod] = useState("");
 
   const saveRoutine = async () => {
     const trimmedTitle = title.trim();
@@ -24,9 +27,22 @@ export default function StudyRoutineScreen({ navigation }: any) {
       return;
     }
 
-    addRoutine(trimmedTitle, trimmedDescription, trimmedTime, async () => {
-      await scheduleNotification(trimmedTitle, trimmedTime);
-    });
+    addRoutine(
+      trimmedTitle,
+      trimmedDescription,
+      trimmedTime,
+      async () => {
+        await scheduleNotification(trimmedTitle, trimmedTime);
+      },
+      {
+        routineType: "study",
+        details: {
+          subject,
+          sessionLength,
+          studyMethod,
+        },
+      },
+    );
     navigation.goBack();
   };
 
@@ -48,6 +64,30 @@ export default function StudyRoutineScreen({ navigation }: any) {
         placeholder="Math, biology, language"
         onChangeText={setDescription}
         value={description}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Subject</Text>
+      <TextInput
+        placeholder="Physics"
+        onChangeText={setSubject}
+        value={subject}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Session length</Text>
+      <TextInput
+        placeholder="90 min"
+        onChangeText={setSessionLength}
+        value={sessionLength}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Method</Text>
+      <TextInput
+        placeholder="Pomodoro, past papers"
+        onChangeText={setStudyMethod}
+        value={studyMethod}
         style={styles.input}
       />
 

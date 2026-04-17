@@ -1,11 +1,5 @@
 import { create } from "zustand";
-
-interface Routine {
-  id: number;
-  title: string;
-  description: string;
-  time: string;
-}
+import { Routine } from "../models/Routine";
 
 interface Store {
   routines: Routine[];

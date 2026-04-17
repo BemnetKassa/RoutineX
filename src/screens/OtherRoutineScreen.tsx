@@ -8,6 +8,8 @@ export default function OtherRoutineScreen({ navigation }: any) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [time, setTime] = useState("");
+  const [category, setCategory] = useState("");
+  const [priority, setPriority] = useState("");
 
   const saveRoutine = async () => {
     const trimmedTitle = title.trim();
@@ -24,9 +26,21 @@ export default function OtherRoutineScreen({ navigation }: any) {
       return;
     }
 
-    addRoutine(trimmedTitle, trimmedDescription, trimmedTime, async () => {
-      await scheduleNotification(trimmedTitle, trimmedTime);
-    });
+    addRoutine(
+      trimmedTitle,
+      trimmedDescription,
+      trimmedTime,
+      async () => {
+        await scheduleNotification(trimmedTitle, trimmedTime);
+      },
+      {
+        routineType: "other",
+        details: {
+          category,
+          priority,
+        },
+      },
+    );
     navigation.goBack();
   };
 
@@ -48,6 +62,22 @@ export default function OtherRoutineScreen({ navigation }: any) {
         placeholder="Optional details"
         onChangeText={setDescription}
         value={description}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Category</Text>
+      <TextInput
+        placeholder="Health, personal, work"
+        onChangeText={setCategory}
+        value={category}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Priority</Text>
+      <TextInput
+        placeholder="Low, medium, high"
+        onChangeText={setPriority}
+        value={priority}
         style={styles.input}
       />
 

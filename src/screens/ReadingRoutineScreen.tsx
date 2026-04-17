@@ -8,6 +8,9 @@ export default function ReadingRoutineScreen({ navigation }: any) {
   const [title, setTitle] = useState("Reading session");
   const [description, setDescription] = useState("");
   const [time, setTime] = useState("");
+  const [bookTitle, setBookTitle] = useState("");
+  const [pagesGoal, setPagesGoal] = useState("");
+  const [readingFormat, setReadingFormat] = useState("");
 
   const saveRoutine = async () => {
     const trimmedTitle = title.trim();
@@ -24,9 +27,22 @@ export default function ReadingRoutineScreen({ navigation }: any) {
       return;
     }
 
-    addRoutine(trimmedTitle, trimmedDescription, trimmedTime, async () => {
-      await scheduleNotification(trimmedTitle, trimmedTime);
-    });
+    addRoutine(
+      trimmedTitle,
+      trimmedDescription,
+      trimmedTime,
+      async () => {
+        await scheduleNotification(trimmedTitle, trimmedTime);
+      },
+      {
+        routineType: "reading",
+        details: {
+          bookTitle,
+          pagesGoal,
+          readingFormat,
+        },
+      },
+    );
     navigation.goBack();
   };
 
@@ -48,6 +64,30 @@ export default function ReadingRoutineScreen({ navigation }: any) {
         placeholder="Atomic Habits, fiction"
         onChangeText={setDescription}
         value={description}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Book title</Text>
+      <TextInput
+        placeholder="Deep Work"
+        onChangeText={setBookTitle}
+        value={bookTitle}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Pages goal</Text>
+      <TextInput
+        placeholder="20 pages"
+        onChangeText={setPagesGoal}
+        value={pagesGoal}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Format</Text>
+      <TextInput
+        placeholder="Physical, Kindle, audio"
+        onChangeText={setReadingFormat}
+        value={readingFormat}
         style={styles.input}
       />
 

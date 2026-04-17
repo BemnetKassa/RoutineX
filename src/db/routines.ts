@@ -1,16 +1,55 @@
-import { Routine } from "../models/Routine";
+import { Routine, RoutineDetails, RoutineType } from "../models/Routine";
 import { db } from "./database";
+
+type AddRoutineOptions = {
+  routineType?: RoutineType;
+  details?: RoutineDetails;
+};
+
+const serializeDetails = (details?: RoutineDetails) => {
+  if (!details) return null;
+  const cleanedEntries = Object.entries(details).filter(
+    ([, value]) => value.trim().length > 0,
+  );
+  if (cleanedEntries.length === 0) return null;
+  return JSON.stringify(Object.fromEntries(cleanedEntries));
+};
+
+const parseRoutineRow = (row: Omit<Routine, "details">): Routine => {
+  let details: RoutineDetails | undefined;
+
+  if (row.detailsJson) {
+    try {
+      const parsed = JSON.parse(row.detailsJson) as unknown;
+      if (parsed && typeof parsed === "object") {
+        details = parsed as RoutineDetails;
+      }
+    } catch {
+      details = undefined;
+    }
+  }
+
+  return {
+    ...row,
+    routineType: (row.routineType ?? "general") as RoutineType,
+    details,
+  };
+};
 
 export const addRoutine = (
   title: string,
   description: string,
   time: string,
   onSuccess?: () => void,
+  options?: AddRoutineOptions,
 ) => {
   try {
+    const routineType = options?.routineType ?? "general";
+    const detailsJson = serializeDetails(options?.details);
+
     db.runSync(
-      "INSERT INTO routines (title, description, time) VALUES (?, ?, ?)",
-      [title, description, time],
+      "INSERT INTO routines (title, description, time, routineType, detailsJson) VALUES (?, ?, ?, ?, ?)",
+      [title, description, time, routineType, detailsJson],
     );
     console.log("Routine added");
     onSuccess?.();
@@ -21,8 +60,12 @@ export const addRoutine = (
 
 export const getRoutines = (setData: (data: Routine[]) => void) => {
   try {
-    const rows = db.getAllSync<Routine>("SELECT * FROM routines");
-    setData(rows);
+    const rows = db.getAllSync<Omit<Routine, "details">>(
+      `SELECT id, title, description, time, COALESCE(routineType, 'general') as routineType, detailsJson
+       FROM routines
+       ORDER BY id DESC`,
+    );
+    setData(rows.map(parseRoutineRow));
   } catch (error) {
     console.log("Fetch error:", error);
   }
@@ -44,13 +87,17 @@ export const updateRoutine = (
   description: string,
   time: string,
   onSuccess?: () => void,
+  options?: AddRoutineOptions,
 ) => {
   try {
+    const routineType = options?.routineType ?? "general";
+    const detailsJson = serializeDetails(options?.details);
+
     db.runSync(
       `UPDATE routines
-       SET title = ?, description = ?, time = ?
+       SET title = ?, description = ?, time = ?, routineType = ?, detailsJson = ?
        WHERE id = ?`,
-      [title, description, time, id],
+      [title, description, time, routineType, detailsJson, id],
     );
     console.log("[RoutineX] Updated");
     onSuccess?.();
