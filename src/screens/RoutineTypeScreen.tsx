@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 
 const ROUTINE_TYPES = [
-  { key: "gym", label: "Gym workout", presetTitle: "Gym workout" },
-  { key: "study", label: "Study session", presetTitle: "Study session" },
-  { key: "reading", label: "Reading session", presetTitle: "Reading session" },
-  { key: "other", label: "Other routines", presetTitle: "" },
-  { key: "habits", label: "Daily habits", presetTitle: "Daily habits" },
+  { key: "gym", label: "Gym workout", screen: "GymRoutine" },
+  { key: "study", label: "Study session", screen: "StudyRoutine" },
+  { key: "reading", label: "Reading session", screen: "ReadingRoutine" },
+  { key: "other", label: "Other routines", screen: "OtherRoutine" },
+  { key: "habits", label: "Daily habits", screen: "DailyHabits" },
 ];
 
 export default function RoutineTypeScreen({ navigation }: any) {
@@ -22,10 +22,7 @@ export default function RoutineTypeScreen({ navigation }: any) {
             key={item.key}
             style={styles.card}
             onPress={() => {
-              navigation.navigate("AddRoutine", {
-                presetTitle: item.presetTitle,
-                routineType: item.key,
-              });
+              navigation.navigate(item.screen);
             }}
           >
             <Text style={styles.cardTitle}>{item.label}</Text>
