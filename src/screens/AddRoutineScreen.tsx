@@ -1,13 +1,19 @@
 import { View, TextInput, Button, StyleSheet, Text, Alert } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { addRoutine } from "../db/routines";
 import { scheduleNotification } from "../services/notifications";
 
-export default function AddRoutineScreen({ navigation }: any) {
+export default function AddRoutineScreen({ navigation, route }: any) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [time, setTime] = useState("");
+
+  useEffect(() => {
+    if (route?.params?.presetTitle) {
+      setTitle(route.params.presetTitle);
+    }
+  }, [route?.params?.presetTitle]);
 
   const saveRoutine = async () => {
     const trimmedTitle = title.trim();

@@ -40,13 +40,14 @@ export default function HomeScreen({ navigation }: any) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.heading}>RoutineX</Text>
-        <Text style={styles.subheading}>Never forget what matters.</Text>
+        <Text style={styles.primaryTagline}>Never forget what matters.</Text>
+        <Text style={styles.secondaryTagline}>From chaos to clarity.</Text>
       </View>
 
       <View style={styles.addButton}>
         <Button
           title="➕ Add Routine"
-          onPress={() => navigation.navigate("AddRoutine")}
+          onPress={() => navigation.navigate("RoutineType")}
         />
       </View>
 
@@ -70,31 +71,45 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#F7F7F5",
+    backgroundColor: "#f0ece4",
   },
   header: {
-    marginBottom: 12,
+    marginBottom: 18,
+    backgroundColor: "#fff6e4",
+    padding: 16,
+    borderRadius: 14,
   },
   heading: {
-    fontSize: 28,
+    fontSize: 40,
     fontWeight: "700",
-    color: "#1E1E1E",
+    color: "#1B1B1B",
   },
-  subheading: {
-    fontSize: 14,
-    color: "#6B7280",
-    marginTop: 4,
+  primaryTagline: {
+    fontSize: 20,
+    color: "#2F2F2F",
+    marginTop: 8,
+    fontWeight: "600",
+  },
+  secondaryTagline: {
+    fontSize: 16,
+    color: "#6B6B6B",
+    marginTop: 2,
   },
   addButton: {
-    marginBottom: 16,
+    marginBottom: 18,
   },
   card: {
     backgroundColor: "#FFFFFF",
     padding: 16,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#ECECEC",
+    borderColor: "#E7E2DA",
     marginBottom: 12,
+    shadowColor: "#0B0B0B",
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   cardHeader: {
     flexDirection: "row",
@@ -104,19 +119,19 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#111827",
+    color: "#1A1A1A",
     flex: 1,
     paddingRight: 10,
   },
   time: {
     fontSize: 14,
-    color: "#2563EB",
+    color: "#1D4ED8",
     fontWeight: "600",
   },
   description: {
     marginTop: 8,
     fontSize: 14,
-    color: "#4B5563",
+    color: "#5B5B5B",
   },
   actions: {
     marginTop: 12,
@@ -133,11 +148,11 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#111827",
+    color: "#1A1A1A",
   },
   emptyText: {
     fontSize: 14,
-    color: "#6B7280",
+    color: "#6B6B6B",
     marginTop: 6,
     textAlign: "center",
   },
